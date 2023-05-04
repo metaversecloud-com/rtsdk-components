@@ -23,8 +23,17 @@ export default {
     commonjs({
       exclude: "node_modules",
     }),
+    license({
+      sourcemap: true,
+      banner: {
+        content: {
+          file: path.resolve("LICENSE.md"),
+        },
+      },
+    }),
     nodeResolve({ preferBuiltins: true, extensions: [".svg", ".js"] }),
     json(),
     resolve(),
+    typescript({ useTsconfigDeclarationDir: true, tsconfig: "tsconfig.json" }),
   ],
 };

@@ -1,7 +1,7 @@
 {
   "author": "Topia",
   "bugs": {
-    "url": "https://github.com/metaversecloud-com/mc-sdk-js/issues"
+    "url": "https://github.com/metaversecloud-com/rtsdk-components/issues"
   },
   "description": "MC Javascript SDK - Topia Client Library",
   "devDependencies": {
@@ -33,7 +33,7 @@
     "dist/*"
   ],
   "gitHead": "7eef1f7fd9b3b0af395f95cb908add3011abf808",
-  "homepage": "https://github.com/metaversecloud-com/mc-sdk-js/tree/main/clients/client-topia",
+  "homepage": "https://github.com/metaversecloud-com/rtsdk-components",
   "license": "bsd-3-clause",
   "keywords": [],
   "name": "@rtsdk/topiacomponents",
@@ -45,10 +45,10 @@
   "repository": {
     "directory": "clients/client-topia",
     "type": "git",
-    "url": "git+https://github.com/metaversecloud-com/mc-sdk-js.git"
+    "url": "git+https://github.com/metaversecloud-com/rtsdk-components.git"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc && rollup -c",
     "test": "ENV=testing jest --watchAll=false",
     "lint": "eslint \"src/**\"",
     "docs": "typedoc",

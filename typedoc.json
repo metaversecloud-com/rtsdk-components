@@ -1,0 +1,13 @@
+{
+  "cleanOutputDir": true,
+  "entryPoints": ["src/leaderboard/index.ts"],
+  "excludePrivate": true,
+  "hideGenerator": true,
+  "name": "RTSDKCOMPONENTS",
+  "navigationLinks": {
+    "Readme": "https://www.npmjs.com/package/@rtsdk/topiacomponents"
+  },
+  "out": "../../docs",
+  "readme": "https://www.npmjs.com/package/@rtsdk/topiacomponents",
+  "tsconfig": "./tsconfig.json"
+}
