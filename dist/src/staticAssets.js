@@ -8,18 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-export const addFrame = ({ InteractiveAsset, assetId, pos, req, urlSlug }) => __awaiter(void 0, void 0, void 0, function* () {
+export const addFrame = ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const prefix = namePrefix || "multiplayer_leaderboard";
         // const frameAsset = await
         InteractiveAsset({
-            id: "UaJENXLHNkuBI4pzFH50",
+            id: frameId,
             // id: "NpPd9WTiQMJxoOspx6w1",
             req,
             position: {
                 x: pos ? pos.x : 0,
                 y: pos ? pos.y : 0,
             },
-            uniqueName: `multiplayer_leaderboard_${assetId}_frame`,
+            uniqueName: `${prefix}_${assetId}_frame`,
             urlSlug,
         });
         // frameAsset.updateScale(1.35);

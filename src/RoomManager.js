@@ -4,8 +4,8 @@
 export const roomBasedOn = "assetId";
 
 export const getRoomAndUsername = async ({ Visitor, query }) => {
-  const { isAdmin, username } = await checkWhetherVisitorInWorld(Visitor, query);
-  return { isAdmin, roomName: query[roomBasedOn], username };
+  const { isAdmin, username, profileId } = await checkWhetherVisitorInWorld(Visitor, query);
+  return { isAdmin, roomName: query[roomBasedOn], username, profileId };
 };
 
 const checkWhetherVisitorInWorld = async (Visitor, query) => {
@@ -23,13 +23,13 @@ const checkWhetherVisitorInWorld = async (Visitor, query) => {
     });
     if (!visitor || !visitor.username) throw "Not in world";
 
-    const { privateZoneId, username, isAdmin } = visitor;
+    const { privateZoneId, username, isAdmin, profileId } = visitor;
 
     if (!privateZoneId || privateZoneId !== assetId) {
       // Not in the private Zone.  Can watch ships fly around, but can't play.
       return { username: null, isAdmin };
     } else {
-      return { isAdmin, username };
+      return { isAdmin, username, profileId };
     }
   } catch (e) {
     // Not actually in the world.  Should prevent from seeing game.

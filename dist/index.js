@@ -5776,18 +5776,19 @@ const updateText = ({ World, req, text, textOptions = {}, uniqueName }) => {
 
 // import { InteractiveAsset } from "../../space-shooter/rtsdk";
 
-const addFrame = async ({ InteractiveAsset, assetId, pos, req, urlSlug }) => {
+const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
   try {
+    const prefix = namePrefix || "multiplayer_leaderboard";
     // const frameAsset = await
     InteractiveAsset({
-      id: "UaJENXLHNkuBI4pzFH50",
+      id: frameId,
       // id: "NpPd9WTiQMJxoOspx6w1",
       req,
       position: {
         x: pos ? pos.x : 0,
         y: pos ? pos.y : 0,
       },
-      uniqueName: `multiplayer_leaderboard_${assetId}_frame`,
+      uniqueName: `${prefix}_${assetId}_frame`,
       urlSlug,
     });
 
@@ -5797,7 +5798,7 @@ const addFrame = async ({ InteractiveAsset, assetId, pos, req, urlSlug }) => {
   }
 };
 
-const leaderboardLength = 10;
+const leaderboardLength$1 = 10;
 
 const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => {
   // Check to see if leaderboard already exists.
@@ -5811,11 +5812,11 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
   // const highScores = null;
   const posOffset = { x: assetPos.x, y: assetPos.y + 400 };
 
-  addFrame({ InteractiveAsset, assetId, pos: posOffset, req, urlSlug });
+  addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
 
   // Doing this because we don't yet have layering in SDK.
   setTimeout(() => {
-    const createLeaderText = ({ pos, uniqueNameId, text }) => {
+    const createLeaderText = ({ pos, index, uniqueNameId, text }) => {
       createText({
         InteractiveAsset,
         pos,
@@ -5824,14 +5825,14 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
         textColor: "#000000",
         textSize: 12,
         textWidth: 300,
-        uniqueName: `multiplayer_leaderboard_${assetId}_${uniqueNameId}_${i}`,
+        uniqueName: `multiplayer_leaderboard_${assetId}_${uniqueNameId}_${index}`,
         urlSlug,
       });
     };
     const distBetweenRows = 23;
     const distBetweenColumns = 150;
 
-    for (var i = 0; i < leaderboardLength; i++) {
+    for (var i = 0; i < leaderboardLength$1; i++) {
       // Player Names
       const { x, y } = posOffset;
       const topOfLeaderboard = -10;
@@ -5840,45 +5841,50 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
       createLeaderText({
         pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
         uniqueNameId: `playerName`,
+        index: i,
       });
 
       // Scores
       createLeaderText({
         pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
         uniqueNameId: `score`,
+        index: i,
       });
     }
 
-    for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
       // Player Names
       const { x, y } = posOffset;
       const topOfLeaderboard = -125;
 
       let scoreObj = { name: "-", date: "-", score: "-" };
       let scoreString = "-";
-      if (highScores && highScores[i]) {
-        scoreObj = highScores[i];
-        scoreObj.date = moment(parseInt(highScores[i].date)).fromNow(); // Use moment to format
+      if (highScores && highScores[j]) {
+        scoreObj = highScores[j];
+        scoreObj.date = moment(parseInt(highScores[j].date)).fromNow(); // Use moment to format
         scoreString = scoreObj.score.toString() || "0";
       }
 
       createLeaderText({
-        pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+        pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + j * distBetweenRows },
         uniqueNameId: `topPlayerName`,
         text: scoreObj.name,
+        index: j,
       });
 
       createLeaderText({
-        pos: { x: x, y: topOfLeaderboard + y + i * distBetweenRows },
+        pos: { x: x, y: topOfLeaderboard + y + j * distBetweenRows },
         uniqueNameId: `topDate`,
         text: scoreObj.date,
+        index: j,
       });
 
       // Scores
       createLeaderText({
-        pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+        pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + j * distBetweenRows },
         uniqueNameId: `topScore`,
         text: scoreString,
+        index: j,
       });
     }
   }, 500);
@@ -5912,7 +5918,7 @@ const resetLeaderboard = () => {
 const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
   let sanitizedArray = [];
   const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
+  for (var i = 0; i < leaderboardLength$1; i++) {
     // Update players
     let name = "-";
     let kills = "-";
@@ -6017,14 +6023,291 @@ function dedupe(arr) {
   });
 }
 
+// import moment from "moment";
+
+const leaderboardLength = 10;
+
+const showBoard = async ({
+  InteractiveAsset,
+  assetId,
+  distBetweenRows,
+  getAssetAndDataObject,
+  keysArray,
+  frameId,
+  req,
+  namePrefix,
+  contentWidth,
+  urlSlug,
+  yOffset,
+}) => {
+  // Check to see if leaderboard already exists.
+
+  const arcadeAsset = await getAssetAndDataObject(req);
+  // const arcadeAsset = await getDroppedAsset(req);
+  const assetPos = arcadeAsset.position;
+
+  // const dataObject = arcadeAsset.dataObject;
+  // const { highScores } = dataObject;
+  // const highScores = null;
+  const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
+
+  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+
+  const prefix = namePrefix || "multiplayer_leaderboard";
+
+  // Doing this because we don't yet have layering in SDK.
+  setTimeout(() => {
+    const createLeaderText = ({ pos, uniqueNameId, text }) => {
+      createText({
+        InteractiveAsset,
+        pos,
+        req,
+        text: text || "-",
+        textColor: "#000000",
+        textSize: 12,
+        textWidth: 300,
+        uniqueName: `${prefix}_${assetId}_${uniqueNameId}`,
+        urlSlug,
+      });
+    };
+
+    const createHeaderText = ({ pos, uniqueNameId, text }) => {
+      createText({
+        InteractiveAsset,
+        pos,
+        req,
+        text: text || "-",
+        textColor: "#000000",
+        textSize: 20,
+        textWidth: 300,
+        uniqueName: `${prefix}_${assetId}_${uniqueNameId}`,
+        urlSlug,
+      });
+    };
+    const numColumns = keysArray.length;
+    const { x, y } = posOffset;
+    const topOfLeaderboard = -50;
+
+    // Create board header
+    keysArray.forEach((key) => {
+      const posX = x - contentWidth / 2 + (i * contentWidth) / (numColumns - 1);
+      const keyText = typeof key === "string" ? key : Object.values(key)[0];
+      createHeaderText({
+        pos: { x: posX, y: topOfLeaderboard + y + i * distBetweenRows },
+        uniqueNameId: `header_${key}`,
+        text: keyText,
+      });
+    });
+
+    const valuesStart = -30;
+
+    // Create board values
+    for (var i = 0; i < leaderboardLength; i++) {
+      keysArray.forEach((key) => {
+        const posX = x - contentWidth / 2 + (i * contentWidth) / (numColumns - 1);
+        createLeaderText({
+          pos: { x: posX, y: valuesStart + y + i * distBetweenRows },
+          uniqueNameId: `${key}_${i}`,
+        });
+      });
+
+      // createLeaderText({
+      //   pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+      //   uniqueNameId: `playerName`,
+      // });
+
+      // // Scores
+      // createLeaderText({
+      //   pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+      //   uniqueNameId: `score`,
+      // });
+    }
+
+    // // High Score part of board
+    // for (var i = 0; i < 3; i++) {
+    //   // Player Names
+    //   const { x, y } = posOffset;
+    //   const topOfLeaderboard = -125;
+
+    //   let scoreObj = { name: "-", date: "-", score: "-" };
+    //   let scoreString = "-";
+    //   if (highScores && highScores[i]) {
+    //     scoreObj = highScores[i];
+    //     scoreObj.date = moment(parseInt(highScores[i].date)).fromNow(); // Use moment to format
+    //     scoreString = scoreObj.score.toString() || "0";
+    //   }
+
+    //   createLeaderText({
+    //     pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+    //     uniqueNameId: `topPlayerName`,
+    //     text: scoreObj.name,
+    //   });
+
+    //   createLeaderText({
+    //     pos: { x: x, y: topOfLeaderboard + y + i * distBetweenRows },
+    //     uniqueNameId: `topDate`,
+    //     text: scoreObj.date,
+    //   });
+
+    //   // Scores
+    //   createLeaderText({
+    //     pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+    //     uniqueNameId: `topScore`,
+    //     text: scoreString,
+    //   });
+    // }
+  }, 500);
+};
+
+const hideBoard = async ({ World, namePrefix, req }) => {
+  const { assetId, urlSlug } = req.body;
+  try {
+    const world = World.create(urlSlug, { credentials: req.body });
+    const prefix = namePrefix || "multiplayer_leaderboard";
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      isPartial: true,
+      uniqueName: `${prefix}_${assetId}`,
+    });
+    if (droppedAssets && droppedAssets.length)
+      droppedAssets.forEach((droppedAsset) => {
+        try {
+          droppedAsset.deleteDroppedAsset();
+        } catch (e) {
+          console.log("Error on delete dropped asset", e);
+        }
+      });
+  } catch (e) {
+    console.log("Error removing leaderboard", e?.response?.status || e?.data?.errors);
+  }
+};
+
+const resetBoard = () => {
+  return;
+};
+
+// import moment from "moment";
+
+const updateBoard = async ({
+  World,
+  // getAssetAndDataObject,
+  leaderboardArray,
+  keysArray,
+  namePrefix,
+  // highScores,
+  req,
+}) => {
+  // let sanitizedArray = [];
+  // const date = new Date().valueOf();
+  for (var i = 0; i < leaderboardLength; i++) {
+    const prefix = namePrefix || "multiplayer_leaderboard";
+    keysArray.forEach((key) => {
+      const text = leaderboardArray[i].data[key];
+      updateText({
+        World,
+        req,
+        text,
+        uniqueName: `${prefix}_${req.body.assetId}_${key}_${i}`,
+      });
+    });
+
+    // if (leaderboardArray[i] && highScores) {
+    //   let name = "-";
+    //   let kills = "-";
+    //   const score = leaderboardArray[i].data.score;
+    //   const id = leaderboardArray[i].id;
+    //   name = leaderboardArray[i].data.name;
+    //   kills = score.toString() || "0";
+    //   sanitizedArray.push({ id, score: kills, name, date });
+    // }
+  }
+
+  // if (highScores) updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
+};
+
+// const updateHighScores = async ({ World, getAssetAndDataObject, req, sanitizedArray }) => {
+//   const arcadeAsset = await getAssetAndDataObject(req); // This seems to be creating issues with API
+//   if (!arcadeAsset) return;
+//   const { dataObject } = arcadeAsset;
+//   const { highScores } = dataObject;
+
+//   // Don't update high score if the lowest high score is higher than the top current score.
+//   if (highScores && highScores[2] && sanitizedArray && sanitizedArray[0].score < highScores[2].score) return;
+
+//   let newArray = highScores ? sanitizedArray.concat(highScores) : sanitizedArray;
+//   let sortedArray = newArray.sort((a, b) => {
+//     return b.score - a.score;
+//   });
+
+//   const objectArray = dedupe(sortedArray);
+//   const highScoreArray = objectArray.slice(0, 3);
+//   // If they are the same, no need to update object or text.
+//   if (highScores === highScoreArray) return;
+
+//   for (let i = 0; i < highScoreArray.length; i++) {
+//     let name = "-";
+//     let date = "-";
+//     let scoreString = "-";
+//     if (highScoreArray[i]) {
+//       const score = highScoreArray[i].score;
+//       name = highScoreArray[i].name;
+//       scoreString = score.toString() || "0";
+//       date = moment(parseInt(highScoreArray[i].date)).fromNow();
+//     }
+
+//     updateText({
+//       World,
+//       req,
+//       text: name,
+//       uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topPlayerName_${i}`,
+//     });
+
+//     updateText({
+//       World,
+//       req,
+//       text: date,
+//       uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topDate_${i}`,
+//     });
+
+//     updateText({
+//       World,
+//       req,
+//       text: scoreString,
+//       uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topScore_${i}`,
+//     });
+//   }
+
+//   try {
+//     arcadeAsset.updateDroppedAssetDataObject({ highScores: highScoreArray });
+//   } catch (e) {
+//     console.log("Cannot update dropped asset", e);
+//   }
+// };
+
+// // Convert to object to dedupe
+// function dedupe(arr) {
+//   var rv = {};
+//   for (var i = 0; i < arr.length; ++i) {
+//     const item = arr[i];
+//     if (item) {
+//       const id = item.id;
+//       // Remove duplicate player IDs and prevent score of 0 from being in high score array.
+//       if (!rv[id] && item.score) rv[id] = item;
+//     }
+//   }
+//   const dedupedArray = Object.keys(rv).map((id) => rv[id]);
+//   return dedupedArray.sort((a, b) => {
+//     return b.score - a.score;
+//   });
+// }
+
 // import { Visitor } from "../../space-shooter/rtsdk";
 // import "regenerator-runtime/runtime";
 
 const roomBasedOn = "assetId";
 
 const getRoomAndUsername = async ({ Visitor, query }) => {
-  const { isAdmin, username } = await checkWhetherVisitorInWorld(Visitor, query);
-  return { isAdmin, roomName: query[roomBasedOn], username };
+  const { isAdmin, username, profileId } = await checkWhetherVisitorInWorld(Visitor, query);
+  return { isAdmin, roomName: query[roomBasedOn], username, profileId };
 };
 
 const checkWhetherVisitorInWorld = async (Visitor, query) => {
@@ -6042,13 +6325,13 @@ const checkWhetherVisitorInWorld = async (Visitor, query) => {
     });
     if (!visitor || !visitor.username) throw "Not in world";
 
-    const { privateZoneId, username, isAdmin } = visitor;
+    const { privateZoneId, username, isAdmin, profileId } = visitor;
 
     if (!privateZoneId || privateZoneId !== assetId) {
       // Not in the private Zone.  Can watch ships fly around, but can't play.
       return { username: null, isAdmin };
     } else {
-      return { isAdmin, username };
+      return { isAdmin, username, profileId };
     }
   } catch (e) {
     // Not actually in the world.  Should prevent from seeing game.
@@ -6058,4 +6341,4 @@ const checkWhetherVisitorInWorld = async (Visitor, query) => {
   }
 };
 
-export { getRoomAndUsername, hideLeaderboard, resetLeaderboard, roomBasedOn, showLeaderboard, updateLeaderboard };
+export { getRoomAndUsername, hideBoard, hideLeaderboard, resetBoard, resetLeaderboard, roomBasedOn, showBoard, showLeaderboard, updateBoard, updateLeaderboard };

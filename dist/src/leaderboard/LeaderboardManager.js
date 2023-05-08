@@ -21,10 +21,10 @@ export const showLeaderboard = ({ InteractiveAsset, assetId, getAssetAndDataObje
     const { highScores } = dataObject;
     // const highScores = null;
     const posOffset = { x: assetPos.x, y: assetPos.y + 400 };
-    addFrame({ InteractiveAsset, assetId, pos: posOffset, req, urlSlug });
+    addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
     // Doing this because we don't yet have layering in SDK.
     setTimeout(() => {
-        const createLeaderText = ({ pos, uniqueNameId, text }) => {
+        const createLeaderText = ({ pos, index, uniqueNameId, text }) => {
             createText({
                 InteractiveAsset,
                 pos,
@@ -33,7 +33,7 @@ export const showLeaderboard = ({ InteractiveAsset, assetId, getAssetAndDataObje
                 textColor: "#000000",
                 textSize: 12,
                 textWidth: 300,
-                uniqueName: `multiplayer_leaderboard_${assetId}_${uniqueNameId}_${i}`,
+                uniqueName: `multiplayer_leaderboard_${assetId}_${uniqueNameId}_${index}`,
                 urlSlug,
             });
         };
@@ -47,39 +47,44 @@ export const showLeaderboard = ({ InteractiveAsset, assetId, getAssetAndDataObje
             createLeaderText({
                 pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
                 uniqueNameId: `playerName`,
+                index: i,
             });
             // Scores
             createLeaderText({
                 pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
                 uniqueNameId: `score`,
+                index: i,
             });
         }
-        for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
             // Player Names
             const { x, y } = posOffset;
             const topOfLeaderboard = -125;
             let scoreObj = { name: "-", date: "-", score: "-" };
             let scoreString = "-";
-            if (highScores && highScores[i]) {
-                scoreObj = highScores[i];
-                scoreObj.date = moment(parseInt(highScores[i].date)).fromNow(); // Use moment to format
+            if (highScores && highScores[j]) {
+                scoreObj = highScores[j];
+                scoreObj.date = moment(parseInt(highScores[j].date)).fromNow(); // Use moment to format
                 scoreString = scoreObj.score.toString() || "0";
             }
             createLeaderText({
-                pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+                pos: { x: x - distBetweenColumns / 2, y: topOfLeaderboard + y + j * distBetweenRows },
                 uniqueNameId: `topPlayerName`,
                 text: scoreObj.name,
+                index: j,
             });
             createLeaderText({
-                pos: { x: x, y: topOfLeaderboard + y + i * distBetweenRows },
+                pos: { x: x, y: topOfLeaderboard + y + j * distBetweenRows },
                 uniqueNameId: `topDate`,
                 text: scoreObj.date,
+                index: j,
             });
             // Scores
             createLeaderText({
-                pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + i * distBetweenRows },
+                pos: { x: x + distBetweenColumns / 2, y: topOfLeaderboard + y + j * distBetweenRows },
                 uniqueNameId: `topScore`,
                 text: scoreString,
+                index: j,
             });
         }
     }, 500);
