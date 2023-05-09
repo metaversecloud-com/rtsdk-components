@@ -12,6 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 import { updateText } from "../text";
 import { leaderboardLength } from "./BoardManager";
+import { capitalize } from "../utils";
 export const updateBoard = ({ World, 
 // getAssetAndDataObject,
 leaderboardArray, keysArray, namePrefix, 
@@ -23,11 +24,13 @@ req, }) => __awaiter(void 0, void 0, void 0, function* () {
         const prefix = namePrefix || "multiplayer_leaderboard";
         keysArray.forEach((key) => {
             const text = leaderboardArray[i].data[key];
+            let keyText = typeof key === "string" ? key : Object.values(key)[0];
+            keyText = capitalize(keyText);
             updateText({
                 World,
                 req,
                 text,
-                uniqueName: `${prefix}_${req.body.assetId}_${key}_${i}`,
+                uniqueName: `${prefix}_${req.body.assetId}_${keyText}_${i}`,
             });
         });
         // if (leaderboardArray[i] && highScores) {

@@ -27,7 +27,7 @@ export const createText = ({ InteractiveAsset, pos, req, text, textColor, textSi
         return textAsset;
     }
     catch (e) {
-        console.log("Error creating text", e.data.errors || e);
+        console.log("Error creating text", e.data ? e.data.errors : e);
     }
 });
 export const updateText = ({ World, req, text, textOptions = {}, uniqueName }) => {

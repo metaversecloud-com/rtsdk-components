@@ -3,6 +3,7 @@
 // import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 import { updateText } from "../text";
 import { leaderboardLength } from "./BoardManager";
+import { capitalize } from "../utils";
 
 export const updateBoard = async ({
   World,
@@ -19,11 +20,13 @@ export const updateBoard = async ({
     const prefix = namePrefix || "multiplayer_leaderboard";
     keysArray.forEach((key) => {
       const text = leaderboardArray[i].data[key];
+      let keyText = typeof key === "string" ? key : Object.values(key)[0];
+      keyText = capitalize(keyText);
       updateText({
         World,
         req,
         text,
-        uniqueName: `${prefix}_${req.body.assetId}_${key}_${i}`,
+        uniqueName: `${prefix}_${req.body.assetId}_${keyText}_${i}`,
       });
     });
 

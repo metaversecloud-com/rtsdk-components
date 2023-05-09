@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 import { createText } from "../text";
 import { addFrame } from "../staticAssets";
+import { capitalize } from "../utils";
 export const leaderboardLength = 10;
 export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAssetAndDataObject, keysArray, frameId, req, namePrefix, contentWidth, urlSlug, yOffset, }) => __awaiter(void 0, void 0, void 0, function* () {
     // Check to see if leaderboard already exists.
@@ -45,33 +46,37 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
                 req,
                 text: text || "-",
                 textColor: "#000000",
-                textSize: 20,
-                textWidth: 300,
+                textSize: 19,
+                textWidth: contentWidth / keysArray.length,
                 uniqueName: `${prefix}_${assetId}_${uniqueNameId}`,
                 urlSlug,
             });
         };
         const numColumns = keysArray.length;
         const { x, y } = posOffset;
-        const topOfLeaderboard = -50;
+        const topOfLeaderboard = -110;
         // Create board header
-        keysArray.forEach((key) => {
-            const posX = x - contentWidth / 2 + (i * contentWidth) / (numColumns - 1);
-            const keyText = typeof key === "string" ? key : Object.values(key)[0];
+        keysArray.forEach((key, index) => {
+            const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
+            let keyText = typeof key === "string" ? key : Object.values(key)[0];
+            keyText = capitalize(keyText);
+            const pos = { x: posX, y: topOfLeaderboard + y };
             createHeaderText({
-                pos: { x: posX, y: topOfLeaderboard + y + i * distBetweenRows },
-                uniqueNameId: `header_${key}`,
+                pos,
+                uniqueNameId: `header_${keyText}`,
                 text: keyText,
             });
         });
-        const valuesStart = -30;
+        const valuesStart = topOfLeaderboard + 35;
         // Create board values
         for (var i = 0; i < leaderboardLength; i++) {
-            keysArray.forEach((key) => {
-                const posX = x - contentWidth / 2 + (i * contentWidth) / (numColumns - 1);
+            keysArray.forEach((key, index) => {
+                const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
+                const pos = { x: posX, y: valuesStart + y + i * distBetweenRows };
+                const keyText = typeof key === "string" ? key : Object.values(key)[0];
                 createLeaderText({
-                    pos: { x: posX, y: valuesStart + y + i * distBetweenRows },
-                    uniqueNameId: `${key}_${i}`,
+                    pos,
+                    uniqueNameId: `${keyText}_${i}`,
                 });
             });
             // createLeaderText({
