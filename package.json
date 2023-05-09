@@ -4,8 +4,7 @@
     "url": "https://github.com/metaversecloud-com/rtsdk-components/issues"
   },
   "engines": {
-    "node": "18.14.0",
-    "npm": "8.19.2"
+    "node": "18.14.2"
   },
   "description": "RTSDK - Component Library",
   "devDependencies": {

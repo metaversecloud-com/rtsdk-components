@@ -19,7 +19,7 @@ export const updateBoard = async ({
   for (var i = 0; i < leaderboardLength; i++) {
     const prefix = namePrefix || "multiplayer_leaderboard";
     keysArray.forEach((key) => {
-      const text = leaderboardArray[i].data[key];
+      const text = leaderboardArray[i] ? leaderboardArray[i].data[key] : "-";
       let keyText = typeof key === "string" ? key : Object.values(key)[0];
       keyText = capitalize(keyText);
       updateText({

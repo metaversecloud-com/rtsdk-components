@@ -6035,6 +6035,7 @@ const capitalize = (str) => {
 };
 
 // import moment from "moment";
+// import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 
 const leaderboardLength = 10;
 
@@ -6202,6 +6203,8 @@ const resetBoard = () => {
 };
 
 // import moment from "moment";
+// import { throttle } from "throttle-debounce";
+// import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 
 const updateBoard = async ({
   World,
@@ -6217,7 +6220,7 @@ const updateBoard = async ({
   for (var i = 0; i < leaderboardLength; i++) {
     const prefix = namePrefix || "multiplayer_leaderboard";
     keysArray.forEach((key) => {
-      const text = leaderboardArray[i].data[key];
+      const text = leaderboardArray[i] ? leaderboardArray[i].data[key] : "-";
       let keyText = typeof key === "string" ? key : Object.values(key)[0];
       keyText = capitalize(keyText);
       updateText({
