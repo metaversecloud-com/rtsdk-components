@@ -5779,7 +5779,7 @@ const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, r
   try {
     const prefix = namePrefix || "multiplayer_leaderboard";
     // const frameAsset = await
-    InteractiveAsset({
+    await InteractiveAsset({
       id: frameId,
       // id: "NpPd9WTiQMJxoOspx6w1",
       req,
@@ -6060,7 +6060,7 @@ const showBoard = async ({
   // const highScores = null;
   const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
 
-  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+  await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 
   const prefix = namePrefix || "multiplayer_board";
 

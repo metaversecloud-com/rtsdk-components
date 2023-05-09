@@ -22,7 +22,7 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
     // const { highScores } = dataObject;
     // const highScores = null;
     const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
-    addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+    yield addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
     const prefix = namePrefix || "multiplayer_board";
     // Doing this because we don't yet have layering in SDK.
     setTimeout(() => {
