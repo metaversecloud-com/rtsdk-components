@@ -3,7 +3,11 @@
   "bugs": {
     "url": "https://github.com/metaversecloud-com/rtsdk-components/issues"
   },
-  "description": "MC Javascript SDK - Topia Client Library",
+  "engines": {
+    "node": "18.14.0",
+    "npm": "8.19.2"
+  },
+  "description": "RTSDK - Component Library",
   "devDependencies": {
     "@rollup/plugin-alias": "^4.0.2",
     "@rollup/plugin-commonjs": "^23.0.2",
@@ -56,5 +60,5 @@
     "local-publish": "yarn build && yalc publish --push --no-scripts"
   },
   "type": "module",
-  "version": "0.0.3"
+  "version": "0.0.4"
 }

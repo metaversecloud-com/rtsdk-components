@@ -6074,7 +6074,7 @@ const showBoard = async ({
         text: text || "-",
         textColor: "#000000",
         textSize: 12,
-        textWidth: 300,
+        textWidth: contentWidth / keysArray.length,
         uniqueName: `${prefix}_${assetId}_${uniqueNameId}`,
         urlSlug,
       });
