@@ -4,7 +4,7 @@ export const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix,
   try {
     const prefix = namePrefix || "multiplayer_leaderboard";
     // const frameAsset = await
-    InteractiveAsset({
+    await InteractiveAsset({
       id: frameId,
       // id: "NpPd9WTiQMJxoOspx6w1",
       req,

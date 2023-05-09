@@ -2,13 +2,13 @@
 // import { throttle } from "throttle-debounce";
 // import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 import { updateText } from "../text";
-import { leaderboardLength } from "./BoardManager";
+import { boardLength } from "./BoardManager";
 import { capitalize } from "../utils";
 
 export const updateBoard = async ({
   World,
   // getAssetAndDataObject,
-  leaderboardArray,
+  boardArray,
   keysArray,
   namePrefix,
   // highScores,
@@ -16,17 +16,18 @@ export const updateBoard = async ({
 }) => {
   // let sanitizedArray = [];
   // const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
-    const prefix = namePrefix || "multiplayer_leaderboard";
+  for (var i = 0; i < boardLength; i++) {
+    const prefix = namePrefix || "multiplayer_board";
     keysArray.forEach((key) => {
-      const text = leaderboardArray[i] ? leaderboardArray[i].data[key] : "-";
-      let keyText = typeof key === "string" ? key : Object.values(key)[0];
-      keyText = capitalize(keyText);
+      let text = "-";
+      let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
+      if (boardArray[i]) text = boardArray[i].data[keyKey];
+
       updateText({
         World,
         req,
         text,
-        uniqueName: `${prefix}_${req.body.assetId}_${keyText}_${i}`,
+        uniqueName: `${prefix}_${req.body.assetId}_${keyKey}_${i}`,
       });
     });
 

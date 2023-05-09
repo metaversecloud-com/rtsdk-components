@@ -5742,36 +5742,35 @@ const createText = async ({
     );
     return textAsset;
   } catch (e) {
-    console.log("Error creating text", e.data ? e.data.errors : e);
+    console.log("Error creating text", e.data && e.data.errors ? e.data.errors : e);
   }
 };
 
-const updateText = ({ World, req, text, textOptions = {}, uniqueName }) => {
-  return new Promise(async (res, rej) => {
-    const { urlSlug } = req.body;
+const updateText = async ({ World, req, text, textOptions = {}, uniqueName }) => {
+  // return new Promise(async (res, rej) => {
+  const { urlSlug } = req.body;
 
-    try {
-      if (!uniqueName) return;
-      const world = World.create(urlSlug, { credentials: req.body });
+  try {
+    if (!uniqueName) return;
+    const world = World.create(urlSlug, { credentials: req.body });
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      uniqueName,
+    });
 
-      const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
-        uniqueName,
-      });
-
-      if (droppedAssets && droppedAssets[0]) {
-        await droppedAssets[0].updateCustomTextAsset(textOptions, text);
-        res();
-        // await droppedAssets[0].updateDroppedAssetDataObject(newDataObject);
-      } else {
-        throw "No dropped asset found";
-      }
-    } catch (e) {
-      // Don't need this console log.  Include it for dx, but it'll hit pretty frequently.
-      // console.log("Error updating text", e);
-      console.log("Error updating text", e.data ? e.data.errors : e);
-      rej();
+    if (droppedAssets && droppedAssets[0]) {
+      await droppedAssets[0].updateCustomTextAsset(textOptions, text);
+      // res();
+      // await droppedAssets[0].updateDroppedAssetDataObject(newDataObject);
+    } else {
+      throw "No dropped asset found";
     }
-  });
+  } catch (e) {
+    // Don't need this console log.  Include it for dx, but it'll hit pretty frequently.
+    // console.log("Error updating text", e);
+    console.log("Error updating text", e.data && e.data.errors ? e.data.errors : e);
+    // rej();
+  }
+  // });
 };
 
 // import { InteractiveAsset } from "../../space-shooter/rtsdk";
@@ -5798,7 +5797,7 @@ const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, r
   }
 };
 
-const leaderboardLength$1 = 10;
+const leaderboardLength = 10;
 
 const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => {
   // Check to see if leaderboard already exists.
@@ -5832,7 +5831,7 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
     const distBetweenRows = 23;
     const distBetweenColumns = 150;
 
-    for (var i = 0; i < leaderboardLength$1; i++) {
+    for (var i = 0; i < leaderboardLength; i++) {
       // Player Names
       const { x, y } = posOffset;
       const topOfLeaderboard = -10;
@@ -5918,7 +5917,7 @@ const resetLeaderboard = () => {
 const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
   let sanitizedArray = [];
   const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength$1; i++) {
+  for (var i = 0; i < leaderboardLength; i++) {
     // Update players
     let name = "-";
     let kills = "-";
@@ -6035,7 +6034,7 @@ const capitalize = (str) => {
 // import moment from "moment";
 // import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 
-const leaderboardLength = 10;
+const boardLength = 10;
 
 const showBoard = async ({
   InteractiveAsset,
@@ -6063,7 +6062,7 @@ const showBoard = async ({
 
   addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 
-  const prefix = namePrefix || "multiplayer_leaderboard";
+  const prefix = namePrefix || "multiplayer_board";
 
   // Doing this because we don't yet have layering in SDK.
   setTimeout(() => {
@@ -6101,13 +6100,14 @@ const showBoard = async ({
     // Create board header
     keysArray.forEach((key, index) => {
       const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
+      let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
       let keyText = typeof key === "string" ? key : Object.values(key)[0];
       keyText = capitalize(keyText);
       const pos = { x: posX, y: topOfLeaderboard + y };
 
       createHeaderText({
         pos,
-        uniqueNameId: `header_${keyText}`,
+        uniqueNameId: `header_${keyKey}`,
         text: keyText,
       });
     });
@@ -6115,14 +6115,15 @@ const showBoard = async ({
     const valuesStart = topOfLeaderboard + 35;
 
     // Create board values
-    for (var i = 0; i < leaderboardLength; i++) {
+    for (var i = 0; i < boardLength; i++) {
       keysArray.forEach((key, index) => {
         const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
         const pos = { x: posX, y: valuesStart + y + i * distBetweenRows };
-        const keyText = typeof key === "string" ? key : Object.values(key)[0];
+        let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
+        // const keyText = typeof key === "string" ? key : Object.values(key)[0];
         createLeaderText({
           pos,
-          uniqueNameId: `${keyText}_${i}`,
+          uniqueNameId: `${keyKey}_${i}`,
         });
       });
 
@@ -6178,7 +6179,7 @@ const hideBoard = async ({ World, namePrefix, req }) => {
   const { assetId, urlSlug } = req.body;
   try {
     const world = World.create(urlSlug, { credentials: req.body });
-    const prefix = namePrefix || "multiplayer_leaderboard";
+    const prefix = namePrefix || "multiplayer_board";
     const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
       isPartial: true,
       uniqueName: `${prefix}_${assetId}`,
@@ -6207,7 +6208,7 @@ const resetBoard = () => {
 const updateBoard = async ({
   World,
   // getAssetAndDataObject,
-  leaderboardArray,
+  boardArray,
   keysArray,
   namePrefix,
   // highScores,
@@ -6215,17 +6216,18 @@ const updateBoard = async ({
 }) => {
   // let sanitizedArray = [];
   // const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
-    const prefix = namePrefix || "multiplayer_leaderboard";
+  for (var i = 0; i < boardLength; i++) {
+    const prefix = namePrefix || "multiplayer_board";
     keysArray.forEach((key) => {
-      const text = leaderboardArray[i] ? leaderboardArray[i].data[key] : "-";
-      let keyText = typeof key === "string" ? key : Object.values(key)[0];
-      keyText = capitalize(keyText);
+      let text = "-";
+      let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
+      if (boardArray[i]) text = boardArray[i].data[keyKey];
+
       updateText({
         World,
         req,
         text,
-        uniqueName: `${prefix}_${req.body.assetId}_${keyText}_${i}`,
+        uniqueName: `${prefix}_${req.body.assetId}_${keyKey}_${i}`,
       });
     });
 

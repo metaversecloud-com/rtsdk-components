@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { createText } from "../text";
 import { addFrame } from "../staticAssets";
 import { capitalize } from "../utils";
-export const leaderboardLength = 10;
+export const boardLength = 10;
 export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAssetAndDataObject, keysArray, frameId, req, namePrefix, contentWidth, urlSlug, yOffset, }) => __awaiter(void 0, void 0, void 0, function* () {
     // Check to see if leaderboard already exists.
     const arcadeAsset = yield getAssetAndDataObject(req);
@@ -23,7 +23,7 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
     // const highScores = null;
     const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
     addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
-    const prefix = namePrefix || "multiplayer_leaderboard";
+    const prefix = namePrefix || "multiplayer_board";
     // Doing this because we don't yet have layering in SDK.
     setTimeout(() => {
         const createLeaderText = ({ pos, uniqueNameId, text }) => {
@@ -58,25 +58,27 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
         // Create board header
         keysArray.forEach((key, index) => {
             const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
+            let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
             let keyText = typeof key === "string" ? key : Object.values(key)[0];
             keyText = capitalize(keyText);
             const pos = { x: posX, y: topOfLeaderboard + y };
             createHeaderText({
                 pos,
-                uniqueNameId: `header_${keyText}`,
+                uniqueNameId: `header_${keyKey}`,
                 text: keyText,
             });
         });
         const valuesStart = topOfLeaderboard + 35;
         // Create board values
-        for (var i = 0; i < leaderboardLength; i++) {
+        for (var i = 0; i < boardLength; i++) {
             keysArray.forEach((key, index) => {
                 const posX = x - contentWidth / 2 + (index * contentWidth) / (numColumns - 1);
                 const pos = { x: posX, y: valuesStart + y + i * distBetweenRows };
-                const keyText = typeof key === "string" ? key : Object.values(key)[0];
+                let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
+                // const keyText = typeof key === "string" ? key : Object.values(key)[0];
                 createLeaderText({
                     pos,
-                    uniqueNameId: `${keyText}_${i}`,
+                    uniqueNameId: `${keyKey}_${i}`,
                 });
             });
             // createLeaderText({
@@ -125,7 +127,7 @@ export const hideBoard = ({ World, namePrefix, req }) => __awaiter(void 0, void 
     const { assetId, urlSlug } = req.body;
     try {
         const world = World.create(urlSlug, { credentials: req.body });
-        const prefix = namePrefix || "multiplayer_leaderboard";
+        const prefix = namePrefix || "multiplayer_board";
         const droppedAssets = yield world.fetchDroppedAssetsWithUniqueName({
             isPartial: true,
             uniqueName: `${prefix}_${assetId}`,
