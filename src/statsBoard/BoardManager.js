@@ -19,7 +19,7 @@ export const showBoard = async ({
   urlSlug,
   yOffset,
 }) => {
-  // Check to see if leaderboard already exists.
+  // Check to see if stats board already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);

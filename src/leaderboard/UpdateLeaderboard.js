@@ -89,7 +89,7 @@ const updateHighScores = async ({ World, getAssetAndDataObject, req, sanitizedAr
   }
 
   try {
-    arcadeAsset.updateDroppedAssetDataObject({ highScores: highScoreArray });
+    arcadeAsset.updateDataObject({ highScores: highScoreArray });
   } catch (e) {
     console.log("Cannot update dropped asset", e);
   }

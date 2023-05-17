@@ -6,7 +6,7 @@ import { addFrame } from "../staticAssets";
 export const leaderboardLength = 10;
 
 export const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => {
-  // Check to see if leaderboard already exists.
+  // TODO Check to see if leaderboard already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);
