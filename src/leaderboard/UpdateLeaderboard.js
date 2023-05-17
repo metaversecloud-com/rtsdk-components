@@ -5,6 +5,14 @@ import { updateText } from "../text";
 import { leaderboardLength } from "./LeaderboardManager";
 
 export const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
+  const { assetId, urlSlug } = req.body;
+  const world = World.create(urlSlug, { credentials: req.body });
+  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+    isPartial: true,
+    uniqueName: `multiplayer_leaderboard_${assetId}`,
+  });
+  if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
+
   let sanitizedArray = [];
   const date = new Date().valueOf();
   for (var i = 0; i < leaderboardLength; i++) {

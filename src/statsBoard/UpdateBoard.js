@@ -3,7 +3,7 @@
 // import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 import { updateText } from "../text";
 import { boardLength } from "./BoardManager";
-import { capitalize } from "../utils";
+// import { capitalize } from "../utils";
 
 export const updateBoard = async ({
   World,
@@ -16,8 +16,16 @@ export const updateBoard = async ({
 }) => {
   // let sanitizedArray = [];
   // const date = new Date().valueOf();
+  const { assetId, urlSlug } = req.body;
+  const prefix = namePrefix || "multiplayer_board";
+  const world = World.create(urlSlug, { credentials: req.body });
+  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+    isPartial: true,
+    uniqueName: `${prefix}_${assetId}`,
+  });
+  if (!droppedAssets || !droppedAssets.length) return; // If no stats components, don't update anything.
+
   for (var i = 0; i < boardLength; i++) {
-    const prefix = namePrefix || "multiplayer_board";
     keysArray.forEach((key) => {
       let text = "-";
       let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
@@ -27,7 +35,7 @@ export const updateBoard = async ({
         World,
         req,
         text,
-        uniqueName: `${prefix}_${req.body.assetId}_${keyKey}_${i}`,
+        uniqueName: `${prefix}_${assetId}_${keyKey}_${i}`,
       });
     });
 

@@ -13,14 +13,14 @@ import { createText } from "../text";
 import { addFrame } from "../staticAssets";
 export const leaderboardLength = 10;
 export const showLeaderboard = ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => __awaiter(void 0, void 0, void 0, function* () {
-    // Check to see if leaderboard already exists.
+    // TODO Check to see if leaderboard already exists.
     const arcadeAsset = yield getAssetAndDataObject(req);
     // const arcadeAsset = await getDroppedAsset(req);
     const assetPos = arcadeAsset.position;
     const dataObject = arcadeAsset.dataObject;
     const { highScores } = dataObject;
     // const highScores = null;
-    const posOffset = { x: assetPos.x, y: assetPos.y + 400 };
+    const posOffset = { x: assetPos.x - 100, y: assetPos.y };
     addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
     // Doing this because we don't yet have layering in SDK.
     setTimeout(() => {

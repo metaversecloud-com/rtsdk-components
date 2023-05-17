@@ -14,7 +14,7 @@ import { addFrame } from "../staticAssets";
 import { capitalize } from "../utils";
 export const boardLength = 10;
 export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAssetAndDataObject, keysArray, frameId, req, namePrefix, contentWidth, urlSlug, yOffset, }) => __awaiter(void 0, void 0, void 0, function* () {
-    // Check to see if leaderboard already exists.
+    // Check to see if stats board already exists.
     const arcadeAsset = yield getAssetAndDataObject(req);
     // const arcadeAsset = await getDroppedAsset(req);
     const assetPos = arcadeAsset.position;

@@ -5800,7 +5800,7 @@ const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, r
 const leaderboardLength = 10;
 
 const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => {
-  // Check to see if leaderboard already exists.
+  // TODO Check to see if leaderboard already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);
@@ -5809,7 +5809,7 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
   const dataObject = arcadeAsset.dataObject;
   const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x, y: assetPos.y + 400 };
+  const posOffset = { x: assetPos.x - 100, y: assetPos.y };
 
   addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
 
@@ -5915,6 +5915,14 @@ const resetLeaderboard = () => {
 };
 
 const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
+  const { assetId, urlSlug } = req.body;
+  const world = World.create(urlSlug, { credentials: req.body });
+  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+    isPartial: true,
+    uniqueName: `multiplayer_leaderboard_${assetId}`,
+  });
+  if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
+
   let sanitizedArray = [];
   const date = new Date().valueOf();
   for (var i = 0; i < leaderboardLength; i++) {
@@ -5999,7 +6007,7 @@ const updateHighScores = async ({ World, getAssetAndDataObject, req, sanitizedAr
   }
 
   try {
-    arcadeAsset.updateDroppedAssetDataObject({ highScores: highScoreArray });
+    arcadeAsset.updateDataObject({ highScores: highScoreArray });
   } catch (e) {
     console.log("Cannot update dropped asset", e);
   }
@@ -6032,7 +6040,6 @@ const capitalize = (str) => {
 };
 
 // import moment from "moment";
-// import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 
 const boardLength = 10;
 
@@ -6049,7 +6056,7 @@ const showBoard = async ({
   urlSlug,
   yOffset,
 }) => {
-  // Check to see if leaderboard already exists.
+  // Check to see if stats board already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);
@@ -6202,8 +6209,7 @@ const resetBoard = () => {
 };
 
 // import moment from "moment";
-// import { throttle } from "throttle-debounce";
-// import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
+// import { capitalize } from "../utils";
 
 const updateBoard = async ({
   World,
@@ -6216,8 +6222,16 @@ const updateBoard = async ({
 }) => {
   // let sanitizedArray = [];
   // const date = new Date().valueOf();
+  const { assetId, urlSlug } = req.body;
+  const prefix = namePrefix || "multiplayer_board";
+  const world = World.create(urlSlug, { credentials: req.body });
+  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+    isPartial: true,
+    uniqueName: `${prefix}_${assetId}`,
+  });
+  if (!droppedAssets || !droppedAssets.length) return; // If no stats components, don't update anything.
+
   for (var i = 0; i < boardLength; i++) {
-    const prefix = namePrefix || "multiplayer_board";
     keysArray.forEach((key) => {
       let text = "-";
       let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
@@ -6227,7 +6241,7 @@ const updateBoard = async ({
         World,
         req,
         text,
-        uniqueName: `${prefix}_${req.body.assetId}_${keyKey}_${i}`,
+        uniqueName: `${prefix}_${assetId}_${keyKey}_${i}`,
       });
     });
 

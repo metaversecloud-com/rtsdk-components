@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 import { updateText } from "../text";
 import { boardLength } from "./BoardManager";
-import { capitalize } from "../utils";
+// import { capitalize } from "../utils";
 export const updateBoard = ({ World, 
 // getAssetAndDataObject,
 boardArray, keysArray, namePrefix, 
@@ -20,8 +20,16 @@ boardArray, keysArray, namePrefix,
 req, }) => __awaiter(void 0, void 0, void 0, function* () {
     // let sanitizedArray = [];
     // const date = new Date().valueOf();
+    const { assetId, urlSlug } = req.body;
+    const prefix = namePrefix || "multiplayer_board";
+    const world = World.create(urlSlug, { credentials: req.body });
+    const droppedAssets = yield world.fetchDroppedAssetsWithUniqueName({
+        isPartial: true,
+        uniqueName: `${prefix}_${assetId}`,
+    });
+    if (!droppedAssets || !droppedAssets.length)
+        return; // If no stats components, don't update anything.
     for (var i = 0; i < boardLength; i++) {
-        const prefix = namePrefix || "multiplayer_board";
         keysArray.forEach((key) => {
             let text = "-";
             let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
@@ -31,7 +39,7 @@ req, }) => __awaiter(void 0, void 0, void 0, function* () {
                 World,
                 req,
                 text,
-                uniqueName: `${prefix}_${req.body.assetId}_${keyKey}_${i}`,
+                uniqueName: `${prefix}_${assetId}_${keyKey}_${i}`,
             });
         });
         // if (leaderboardArray[i] && highScores) {

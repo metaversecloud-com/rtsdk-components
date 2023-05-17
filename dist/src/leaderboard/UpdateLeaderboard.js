@@ -13,6 +13,14 @@ import moment from "moment";
 import { updateText } from "../text";
 import { leaderboardLength } from "./LeaderboardManager";
 export const updateLeaderboard = ({ World, getAssetAndDataObject, leaderboardArray, req }) => __awaiter(void 0, void 0, void 0, function* () {
+    const { assetId, urlSlug } = req.body;
+    const world = World.create(urlSlug, { credentials: req.body });
+    const droppedAssets = yield world.fetchDroppedAssetsWithUniqueName({
+        isPartial: true,
+        uniqueName: `multiplayer_leaderboard_${assetId}`,
+    });
+    if (!droppedAssets || !droppedAssets.length)
+        return; // If no leaderboard components, don't update.
     let sanitizedArray = [];
     const date = new Date().valueOf();
     for (var i = 0; i < leaderboardLength; i++) {
@@ -90,7 +98,7 @@ const updateHighScores = ({ World, getAssetAndDataObject, req, sanitizedArray })
         });
     }
     try {
-        arcadeAsset.updateDroppedAssetDataObject({ highScores: highScoreArray });
+        arcadeAsset.updateDataObject({ highScores: highScoreArray });
     }
     catch (e) {
         console.log("Cannot update dropped asset", e);
