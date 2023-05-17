@@ -6056,6 +6056,7 @@ const showBoard = async ({
   namePrefix,
   contentWidth,
   urlSlug,
+  xOffset,
   yOffset,
 }) => {
   // Check to see if stats board already exists.
@@ -6067,7 +6068,7 @@ const showBoard = async ({
   // const dataObject = arcadeAsset.dataObject;
   // const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
+  const posOffset = { x: assetPos.x + xOffset, y: assetPos.y + yOffset };
 
   await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 

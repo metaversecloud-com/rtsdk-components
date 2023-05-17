@@ -13,7 +13,7 @@ import { createText } from "../text";
 import { addFrame } from "../staticAssets";
 import { capitalize } from "../utils";
 export const boardLength = 10;
-export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAssetAndDataObject, keysArray, frameId, req, namePrefix, contentWidth, urlSlug, yOffset, }) => __awaiter(void 0, void 0, void 0, function* () {
+export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAssetAndDataObject, keysArray, frameId, req, namePrefix, contentWidth, urlSlug, xOffset, yOffset, }) => __awaiter(void 0, void 0, void 0, function* () {
     // Check to see if stats board already exists.
     const arcadeAsset = yield getAssetAndDataObject(req);
     // const arcadeAsset = await getDroppedAsset(req);
@@ -21,7 +21,7 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
     // const dataObject = arcadeAsset.dataObject;
     // const { highScores } = dataObject;
     // const highScores = null;
-    const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
+    const posOffset = { x: assetPos.x + xOffset, y: assetPos.y + yOffset };
     yield addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
     const prefix = namePrefix || "multiplayer_board";
     // Doing this because we don't yet have layering in SDK.
