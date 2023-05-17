@@ -21,7 +21,9 @@ export const showBoard = ({ InteractiveAsset, assetId, distBetweenRows, getAsset
     // const dataObject = arcadeAsset.dataObject;
     // const { highScores } = dataObject;
     // const highScores = null;
-    const posOffset = { x: assetPos.x + xOffset, y: assetPos.y + yOffset };
+    const x = xOffset ? assetPos.x + xOffset : assetPos.x;
+    const y = yOffset ? assetPos.y + yOffset : assetPos.y;
+    const posOffset = { x, y };
     yield addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
     const prefix = namePrefix || "multiplayer_board";
     // Doing this because we don't yet have layering in SDK.

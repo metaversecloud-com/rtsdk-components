@@ -5811,7 +5811,7 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
   const dataObject = arcadeAsset.dataObject;
   const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x - 100, y: assetPos.y };
+  const posOffset = { x: assetPos.x - 400, y: assetPos.y };
 
   addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
 
@@ -6068,7 +6068,9 @@ const showBoard = async ({
   // const dataObject = arcadeAsset.dataObject;
   // const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x + xOffset, y: assetPos.y + yOffset };
+  const x = xOffset ? assetPos.x + xOffset : assetPos.x;
+  const y = yOffset ? assetPos.y + yOffset : assetPos.y;
+  const posOffset = { x, y };
 
   await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 

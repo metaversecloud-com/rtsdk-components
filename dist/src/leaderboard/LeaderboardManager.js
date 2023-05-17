@@ -20,7 +20,7 @@ export const showLeaderboard = ({ InteractiveAsset, assetId, getAssetAndDataObje
     const dataObject = arcadeAsset.dataObject;
     const { highScores } = dataObject;
     // const highScores = null;
-    const posOffset = { x: assetPos.x - 100, y: assetPos.y };
+    const posOffset = { x: assetPos.x - 400, y: assetPos.y };
     addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
     // Doing this because we don't yet have layering in SDK.
     setTimeout(() => {
