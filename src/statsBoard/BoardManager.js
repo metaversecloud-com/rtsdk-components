@@ -33,7 +33,7 @@ export const showBoard = async ({
   const y = yOffset ? assetPos.y + yOffset : assetPos.y;
   const posOffset = { x, y };
 
-  await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 
   const prefix = namePrefix || "multiplayer_board";
 

@@ -1,10 +1,10 @@
 // import { InteractiveAsset } from "../../space-shooter/rtsdk";
 
-export const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
+export const addFrame = ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
   try {
     const prefix = namePrefix || "multiplayer_leaderboard";
     // const frameAsset = await
-    await InteractiveAsset({
+    InteractiveAsset({
       id: frameId,
       // id: "NpPd9WTiQMJxoOspx6w1",
       req,
