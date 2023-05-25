@@ -6,7 +6,7 @@ import { addFrame } from "../staticAssets";
 export const leaderboardLength = 10;
 
 export const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObject, req, urlSlug }) => {
-  // Check to see if leaderboard already exists.
+  // TODO Check to see if leaderboard already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);
@@ -15,7 +15,7 @@ export const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDa
   const dataObject = arcadeAsset.dataObject;
   const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x, y: assetPos.y + 400 };
+  const posOffset = { x: assetPos.x - 400, y: assetPos.y };
 
   addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
 

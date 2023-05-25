@@ -17,9 +17,10 @@ export const showBoard = async ({
   namePrefix,
   contentWidth,
   urlSlug,
+  xOffset,
   yOffset,
 }) => {
-  // Check to see if leaderboard already exists.
+  // Check to see if stats board already exists.
 
   const arcadeAsset = await getAssetAndDataObject(req);
   // const arcadeAsset = await getDroppedAsset(req);
@@ -28,7 +29,9 @@ export const showBoard = async ({
   // const dataObject = arcadeAsset.dataObject;
   // const { highScores } = dataObject;
   // const highScores = null;
-  const posOffset = { x: assetPos.x, y: assetPos.y + yOffset };
+  const x = xOffset ? assetPos.x + xOffset : assetPos.x;
+  const y = yOffset ? assetPos.y + yOffset : assetPos.y;
+  const posOffset = { x, y };
 
   await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 
