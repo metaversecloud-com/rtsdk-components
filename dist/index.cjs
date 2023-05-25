@@ -5725,7 +5725,7 @@ const createText = async ({
 }) => {
   try {
     const textAsset = await InteractiveAsset({
-      id: "rXLgzCs1wxpx96YLZAN5", // Text asset ID
+      id: "textAsset", // Text asset ID
       req,
       position: pos,
       uniqueName,
