@@ -17,7 +17,8 @@ export const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDa
   // const highScores = null;
   const posOffset = { x: assetPos.x - 400, y: assetPos.y };
 
-  addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
+  const layers = { bottom: "https://topiaimages.s3.us-west-1.amazonaws.com/Leaderboard.png", top: "" };
+  addFrame({ InteractiveAsset, assetId, layers, pos: posOffset, req, urlSlug });
 
   // Doing this because we don't yet have layering in SDK.
   setTimeout(() => {

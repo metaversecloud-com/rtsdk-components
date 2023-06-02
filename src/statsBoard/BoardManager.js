@@ -12,7 +12,7 @@ export const showBoard = async ({
   distBetweenRows,
   getAssetAndDataObject,
   keysArray,
-  frameId,
+  frameLayer,
   req,
   namePrefix,
   contentWidth,
@@ -33,7 +33,8 @@ export const showBoard = async ({
   const y = yOffset ? assetPos.y + yOffset : assetPos.y;
   const posOffset = { x, y };
 
-  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+  const layers = { bottom: frameLayer || "https://topiaimages.s3.us-west-1.amazonaws.com/StatsBoard.png", top: "" };
+  addFrame({ InteractiveAsset, assetId, layers, namePrefix, pos: posOffset, req, urlSlug });
 
   const prefix = namePrefix || "multiplayer_board";
 
