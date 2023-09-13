@@ -5725,7 +5725,7 @@ const createText = async ({
 }) => {
   try {
     const textAsset = await InteractiveAsset({
-      id: "rXLgzCs1wxpx96YLZAN5", // Text asset ID
+      id: "textAsset", // Text asset ID
       req,
       position: pos,
       uniqueName,
@@ -5777,11 +5777,11 @@ const updateText = async ({ World, req, text, textOptions = {}, uniqueName }) =>
 
 // import { InteractiveAsset } from "../../space-shooter/rtsdk";
 
-const addFrame = async ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
+const addFrame = ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
   try {
     const prefix = namePrefix || "multiplayer_leaderboard";
     // const frameAsset = await
-    await InteractiveAsset({
+    InteractiveAsset({
       id: frameId,
       // id: "NpPd9WTiQMJxoOspx6w1",
       req,
@@ -6045,6 +6045,7 @@ const capitalize = (str) => {
 };
 
 // import moment from "moment";
+// import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 
 const boardLength = 10;
 
@@ -6075,7 +6076,7 @@ const showBoard = async ({
   const y = yOffset ? assetPos.y + yOffset : assetPos.y;
   const posOffset = { x, y };
 
-  await addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
 
   const prefix = namePrefix || "multiplayer_board";
 
@@ -6217,6 +6218,8 @@ const resetBoard = () => {
 };
 
 // import moment from "moment";
+// import { throttle } from "throttle-debounce";
+// import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 // import { capitalize } from "../utils";
 
 const updateBoard = async ({

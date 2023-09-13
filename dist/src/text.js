@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 export const createText = ({ InteractiveAsset, pos, req, text, textColor, textSize, textWidth, uniqueName, urlSlug, }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const textAsset = yield InteractiveAsset({
-            id: "rXLgzCs1wxpx96YLZAN5",
+            id: "textAsset",
             req,
             position: pos,
             uniqueName,
