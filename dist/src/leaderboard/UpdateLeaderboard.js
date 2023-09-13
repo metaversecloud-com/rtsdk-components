@@ -14,41 +14,46 @@ import { updateText } from "../text";
 import { leaderboardLength } from "./LeaderboardManager";
 export const updateLeaderboard = ({ World, getAssetAndDataObject, leaderboardArray, req }) => __awaiter(void 0, void 0, void 0, function* () {
     const { assetId, urlSlug } = req.body;
-    const world = World.create(urlSlug, { credentials: req.body });
-    const droppedAssets = yield world.fetchDroppedAssetsWithUniqueName({
-        isPartial: true,
-        uniqueName: `multiplayer_leaderboard_${assetId}`,
-    });
-    if (!droppedAssets || !droppedAssets.length)
-        return; // If no leaderboard components, don't update.
-    let sanitizedArray = [];
-    const date = new Date().valueOf();
-    for (var i = 0; i < leaderboardLength; i++) {
-        // Update players
-        let name = "-";
-        let kills = "-";
-        if (leaderboardArray[i]) {
-            const score = leaderboardArray[i].data.kills;
-            const id = leaderboardArray[i].id;
-            name = leaderboardArray[i].data.name;
-            kills = score.toString() || "0";
-            sanitizedArray.push({ id, score, name, date });
+    try {
+        const world = World.create(urlSlug, { credentials: req.body });
+        const droppedAssets = yield world.fetchDroppedAssetsWithUniqueName({
+            isPartial: true,
+            uniqueName: `multiplayer_leaderboard_${assetId}`,
+        });
+        if (!droppedAssets || !droppedAssets.length)
+            return; // If no leaderboard components, don't update.
+        let sanitizedArray = [];
+        const date = new Date().valueOf();
+        for (var i = 0; i < leaderboardLength; i++) {
+            // Update players
+            let name = "-";
+            let kills = "-";
+            if (leaderboardArray[i]) {
+                const score = leaderboardArray[i].data.kills;
+                const id = leaderboardArray[i].id;
+                name = leaderboardArray[i].data.name;
+                kills = score.toString() || "0";
+                sanitizedArray.push({ id, score, name, date });
+            }
+            updateText({
+                World,
+                req,
+                text: name,
+                uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
+            });
+            // Update scores
+            updateText({
+                World,
+                req,
+                text: kills,
+                uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
+            });
         }
-        updateText({
-            World,
-            req,
-            text: name,
-            uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
-        });
-        // Update scores
-        updateText({
-            World,
-            req,
-            text: kills,
-            uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
-        });
+        updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
     }
-    updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
+    catch (e) {
+        console.log(e);
+    }
 });
 const updateHighScores = ({ World, getAssetAndDataObject, req, sanitizedArray }) => __awaiter(void 0, void 0, void 0, function* () {
     const arcadeAsset = yield getAssetAndDataObject(req); // This seems to be creating issues with API

@@ -5918,42 +5918,45 @@ const resetLeaderboard = () => {
 
 const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
   const { assetId, urlSlug } = req.body;
-  const world = World.create(urlSlug, { credentials: req.body });
-  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
-    isPartial: true,
-    uniqueName: `multiplayer_leaderboard_${assetId}`,
-  });
-  if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
+  try {
+    const world = World.create(urlSlug, { credentials: req.body });
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      isPartial: true,
+      uniqueName: `multiplayer_leaderboard_${assetId}`,
+    });
+    if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
 
-  let sanitizedArray = [];
-  const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
-    // Update players
-    let name = "-";
-    let kills = "-";
-    if (leaderboardArray[i]) {
-      const score = leaderboardArray[i].data.kills;
-      const id = leaderboardArray[i].id;
-      name = leaderboardArray[i].data.name;
-      kills = score.toString() || "0";
-      sanitizedArray.push({ id, score, name, date });
+    let sanitizedArray = [];
+    const date = new Date().valueOf();
+    for (var i = 0; i < leaderboardLength; i++) {
+      // Update players
+      let name = "-";
+      let kills = "-";
+      if (leaderboardArray[i]) {
+        const score = leaderboardArray[i].data.kills;
+        const id = leaderboardArray[i].id;
+        name = leaderboardArray[i].data.name;
+        kills = score.toString() || "0";
+        sanitizedArray.push({ id, score, name, date });
+      }
+      updateText({
+        World,
+        req,
+        text: name,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
+      });
+      // Update scores
+      updateText({
+        World,
+        req,
+        text: kills,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
+      });
     }
-    updateText({
-      World,
-      req,
-      text: name,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
-    });
-    // Update scores
-    updateText({
-      World,
-      req,
-      text: kills,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
-    });
+    updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
+  } catch (e) {
+    console.log(e);
   }
-
-  updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
 };
 
 const updateHighScores = async ({ World, getAssetAndDataObject, req, sanitizedArray }) => {
@@ -6229,36 +6232,41 @@ const updateBoard = async ({
   // const date = new Date().valueOf();
   const { assetId, urlSlug } = req.body;
   const prefix = namePrefix || "multiplayer_board";
-  const world = World.create(urlSlug, { credentials: req.body });
-  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
-    isPartial: true,
-    uniqueName: `${prefix}_${assetId}`,
-  });
-  if (!droppedAssets || !droppedAssets.length) return; // If no stats components, don't update anything.
+  try {
+    const world = World.create(urlSlug, { credentials: req.body });
 
-  for (var i = 0; i < boardLength; i++) {
-    keysArray.forEach((key) => {
-      let text = "-";
-      let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
-      if (boardArray[i]) text = boardArray[i].data[keyKey];
-
-      updateText({
-        World,
-        req,
-        text,
-        uniqueName: `${prefix}_${assetId}_${keyKey}_${i}`,
-      });
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      isPartial: true,
+      uniqueName: `${prefix}_${assetId}`,
     });
+    if (!droppedAssets || !droppedAssets.length) return; // If no stats components, don't update anything.
 
-    // if (leaderboardArray[i] && highScores) {
-    //   let name = "-";
-    //   let kills = "-";
-    //   const score = leaderboardArray[i].data.score;
-    //   const id = leaderboardArray[i].id;
-    //   name = leaderboardArray[i].data.name;
-    //   kills = score.toString() || "0";
-    //   sanitizedArray.push({ id, score: kills, name, date });
-    // }
+    for (var i = 0; i < boardLength; i++) {
+      keysArray.forEach((key) => {
+        let text = "-";
+        let keyKey = typeof key === "string" ? key : Object.keys(key)[0];
+        if (boardArray[i]) text = boardArray[i].data[keyKey];
+
+        updateText({
+          World,
+          req,
+          text,
+          uniqueName: `${prefix}_${assetId}_${keyKey}_${i}`,
+        });
+      });
+
+      // if (leaderboardArray[i] && highScores) {
+      //   let name = "-";
+      //   let kills = "-";
+      //   const score = leaderboardArray[i].data.score;
+      //   const id = leaderboardArray[i].id;
+      //   name = leaderboardArray[i].data.name;
+      //   kills = score.toString() || "0";
+      //   sanitizedArray.push({ id, score: kills, name, date });
+      // }
+    }
+  } catch (e) {
+    console.log(e);
   }
 
   // if (highScores) updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });

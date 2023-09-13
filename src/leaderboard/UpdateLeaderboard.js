@@ -6,42 +6,45 @@ import { leaderboardLength } from "./LeaderboardManager";
 
 export const updateLeaderboard = async ({ World, getAssetAndDataObject, leaderboardArray, req }) => {
   const { assetId, urlSlug } = req.body;
-  const world = World.create(urlSlug, { credentials: req.body });
-  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
-    isPartial: true,
-    uniqueName: `multiplayer_leaderboard_${assetId}`,
-  });
-  if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
+  try {
+    const world = World.create(urlSlug, { credentials: req.body });
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      isPartial: true,
+      uniqueName: `multiplayer_leaderboard_${assetId}`,
+    });
+    if (!droppedAssets || !droppedAssets.length) return; // If no leaderboard components, don't update.
 
-  let sanitizedArray = [];
-  const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
-    // Update players
-    let name = "-";
-    let kills = "-";
-    if (leaderboardArray[i]) {
-      const score = leaderboardArray[i].data.kills;
-      const id = leaderboardArray[i].id;
-      name = leaderboardArray[i].data.name;
-      kills = score.toString() || "0";
-      sanitizedArray.push({ id, score, name, date });
+    let sanitizedArray = [];
+    const date = new Date().valueOf();
+    for (var i = 0; i < leaderboardLength; i++) {
+      // Update players
+      let name = "-";
+      let kills = "-";
+      if (leaderboardArray[i]) {
+        const score = leaderboardArray[i].data.kills;
+        const id = leaderboardArray[i].id;
+        name = leaderboardArray[i].data.name;
+        kills = score.toString() || "0";
+        sanitizedArray.push({ id, score, name, date });
+      }
+      updateText({
+        World,
+        req,
+        text: name,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
+      });
+      // Update scores
+      updateText({
+        World,
+        req,
+        text: kills,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
+      });
     }
-    updateText({
-      World,
-      req,
-      text: name,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
-    });
-    // Update scores
-    updateText({
-      World,
-      req,
-      text: kills,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
-    });
+    updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
+  } catch (e) {
+    console.log(e);
   }
-
-  updateHighScores({ World, getAssetAndDataObject, req, sanitizedArray });
 };
 
 const updateHighScores = async ({ World, getAssetAndDataObject, req, sanitizedArray }) => {
