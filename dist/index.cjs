@@ -5777,13 +5777,11 @@ const updateText = async ({ World, req, text, textOptions = {}, uniqueName }) =>
 
 // import { InteractiveAsset } from "../../space-shooter/rtsdk";
 
-const addFrame = ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, urlSlug }) => {
+const addFrame = async ({ InteractiveAsset, assetId, layers, namePrefix, pos, req, urlSlug }) => {
   try {
     const prefix = namePrefix || "multiplayer_leaderboard";
-    // const frameAsset = await
-    InteractiveAsset({
-      id: frameId,
-      // id: "NpPd9WTiQMJxoOspx6w1",
+    const droppedAsset = await InteractiveAsset({
+      id: "webImageAsset",
       req,
       position: {
         x: pos ? pos.x : 0,
@@ -5793,7 +5791,10 @@ const addFrame = ({ InteractiveAsset, assetId, frameId, namePrefix, pos, req, ur
       urlSlug,
     });
 
+    if (droppedAsset) await droppedAsset.updateWebImageLayers(layers.bottom || "", layers.top || "");
+
     // frameAsset.updateScale(1.35);
+    // const egg = await dropWebImageAsset({ ...req, body: newBody });
   } catch (e) {
     console.log("Error adding frame", e);
   }
@@ -5813,7 +5814,8 @@ const showLeaderboard = async ({ InteractiveAsset, assetId, getAssetAndDataObjec
   // const highScores = null;
   const posOffset = { x: assetPos.x - 400, y: assetPos.y };
 
-  addFrame({ InteractiveAsset, assetId, frameId: "UaJENXLHNkuBI4pzFH50", pos: posOffset, req, urlSlug });
+  const layers = { bottom: "https://topiaimages.s3.us-west-1.amazonaws.com/Leaderboard.png", top: "" };
+  addFrame({ InteractiveAsset, assetId, layers, pos: posOffset, req, urlSlug });
 
   // Doing this because we don't yet have layering in SDK.
   setTimeout(() => {
@@ -6045,7 +6047,6 @@ const capitalize = (str) => {
 };
 
 // import moment from "moment";
-// import { getAssetAndDataObject, World } from "../../../space-shooter/rtsdk";
 
 const boardLength = 10;
 
@@ -6055,7 +6056,7 @@ const showBoard = async ({
   distBetweenRows,
   getAssetAndDataObject,
   keysArray,
-  frameId,
+  frameLayer,
   req,
   namePrefix,
   contentWidth,
@@ -6076,7 +6077,8 @@ const showBoard = async ({
   const y = yOffset ? assetPos.y + yOffset : assetPos.y;
   const posOffset = { x, y };
 
-  addFrame({ InteractiveAsset, assetId, frameId, namePrefix, pos: posOffset, req, urlSlug });
+  const layers = { bottom: frameLayer || "https://topiaimages.s3.us-west-1.amazonaws.com/StatsBoard.png", top: "" };
+  addFrame({ InteractiveAsset, assetId, layers, namePrefix, pos: posOffset, req, urlSlug });
 
   const prefix = namePrefix || "multiplayer_board";
 
@@ -6218,8 +6220,6 @@ const resetBoard = () => {
 };
 
 // import moment from "moment";
-// import { throttle } from "throttle-debounce";
-// import { getAssetAndDataObject } from "../../../space-shooter/rtsdk";
 // import { capitalize } from "../utils";
 
 const updateBoard = async ({
